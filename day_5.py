@@ -33,16 +33,16 @@ def add_vert_horiz_line_to_grid(start, stop, grid):
 
 
 def add_diagonal_line_to_grid(start, stop, grid):
-    x_diff_positive = int(stop[1]) > int(start[1])
-    y_diff_positive = int(stop[0]) > int(start[0])
+    x_diff_positive = int(stop[0]) > int(start[0])
+    y_diff_positive = int(stop[1]) > int(start[1])
     length = abs(int(stop[1]) - int(start[1]))
     cur_point = (int(start[0]), int(start[1]))
-    grid[cur_point[0]][cur_point[1]] += 1
+    grid[cur_point[1]][cur_point[0]] += 1
     for i in range(length):
-        new_y_coord = cur_point[0] + 1 if y_diff_positive else cur_point[0] - 1
-        new_x_coord = cur_point[1] + 1 if x_diff_positive else cur_point[1] - 1
-        cur_point = (new_y_coord, new_x_coord)
-        grid[cur_point[0]][cur_point[1]] += 1
+        new_x_coord = cur_point[0] + 1 if x_diff_positive else cur_point[0] - 1
+        new_y_coord = cur_point[1] + 1 if y_diff_positive else cur_point[1] - 1
+        cur_point = (new_x_coord, new_y_coord)
+        grid[cur_point[1]][cur_point[0]] += 1
 
 
 def is_line_vert_or_horiz(start, stop):
