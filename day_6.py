@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from collections import Counter
+
 # How many lanternfish would there be after 80 days?
 
 
@@ -39,25 +40,24 @@ def pass_a_day_fish_cycle(fish_day_dict):
         5: fives,
         6: sixes,
         7: sevens,
-        8: eights
+        8: eights,
     }
 
     return dict_after_day_passes
 
+
 def main():
     parser = ArgumentParser()
-    parser.add_argument("-t",
-                        "--testing",
-                        action="store_true")
-    parser.add_argument("-d",
-                        "--days",
-                        type=int)
+    parser.add_argument("-t", "--testing", action="store_true")
+    parser.add_argument("-d", "--days", type=int)
     args = parser.parse_args()
     testing = args.testing
     days = args.days
     fish = get_initial_fish(testing)
 
-    fish_day_dict = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0} | dict(Counter(fish))
+    fish_day_dict = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0} | dict(
+        Counter(fish)
+    )
 
     for _ in range(days):
         fish_day_dict = pass_a_day_fish_cycle(fish_day_dict)

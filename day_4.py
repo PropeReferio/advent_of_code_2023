@@ -1,10 +1,10 @@
 def create_boards():
     with open("./inputs/day_4.txt", "r") as rf:
         boards = rf.read().split("\n\n")
-    call_numbers = boards[0].split(',')
+    call_numbers = boards[0].split(",")
     boards = boards[1:]
-    boards_array = [board.split('\n') for board in boards]
-    boards_array = [[strng.split(' ') for strng in board] for board in boards_array]
+    boards_array = [board.split("\n") for board in boards]
+    boards_array = [[strng.split(" ") for strng in board] for board in boards_array]
     new_boards_array = []
     for board in boards_array:
         new_board = []
@@ -18,7 +18,10 @@ def create_boards():
         for line in board:
             if len(line) != 5:
                 raise Exception("improper board")
-    marked = [[[False, False, False, False, False] for line in board] for board in new_boards_array]
+    marked = [
+        [[False, False, False, False, False] for line in board]
+        for board in new_boards_array
+    ]
 
     return new_boards_array, marked, call_numbers
 

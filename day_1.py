@@ -9,7 +9,7 @@ with open(Path("C:/Users/boste/OneDrive/Desktop/day_1_input.txt"), "r") as rf:
 increases = 0
 
 for i in range(1, len(depths)):
-    if depths[i] > depths[i-1]:
+    if depths[i] > depths[i - 1]:
         increases += 1
 
 # print(increases)
@@ -18,8 +18,8 @@ for i in range(1, len(depths)):
 increases = 0
 
 for i in range(3, len(depths)):
-    group_a = sum([depths[i-1], depths[i-2], depths[i-3]])
-    group_b = sum([depths[i], depths[i-1], depths[i-2]])
+    group_a = sum([depths[i - 1], depths[i - 2], depths[i - 3]])
+    group_b = sum([depths[i], depths[i - 1], depths[i - 2]])
     if group_b > group_a:
         increases += 1
 

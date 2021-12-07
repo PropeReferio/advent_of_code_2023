@@ -1,5 +1,6 @@
-from pprint import pprint
 from argparse import ArgumentParser
+from pprint import pprint
+
 
 def convert_text_to_coordinates(testing=False):
     """
@@ -64,24 +65,24 @@ def calculate_danger_points(grid):
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("-t",
-                        "--testing",
-                        action="store_true")    
-    parser.add_argument("-d",
-                        "--diagonal",
-                        action="store_true",
-                        help="Count diagonal lines also.")
+    parser.add_argument("-t", "--testing", action="store_true")
+    parser.add_argument(
+        "-d", "--diagonal", action="store_true", help="Count diagonal lines also."
+    )
     args = parser.parse_args()
     testing = args.testing
     diagonal = args.diagonal
     line_points = convert_text_to_coordinates(testing=testing)
 
     # Step 2: Create 999 x 999 grid that increments values when a line crosses a point
-    grid = [[0 for i in range(10 if testing else 1000)] for _ in range(10 if testing else 1000)]
+    grid = [
+        [0 for i in range(10 if testing else 1000)]
+        for _ in range(10 if testing else 1000)
+    ]
 
     # Step 3: Add horizontal and vertical lines to grid
     for line_seg in line_points:
-        start, stop = line_seg[0].split(','), line_seg[1].split(',')
+        start, stop = line_seg[0].split(","), line_seg[1].split(",")
         if diagonal:
             if is_line_vert_or_horiz(start, stop):
                 add_vert_horiz_line_to_grid(start, stop, grid)
@@ -97,5 +98,6 @@ def main():
     print(danger_points)
     if testing:
         pprint(grid)
+
 
 main()

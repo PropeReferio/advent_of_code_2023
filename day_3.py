@@ -1,9 +1,9 @@
 from collections import Counter
 
-epsilon, gamma = '', ''
+epsilon, gamma = "", ""
 
 with open("./inputs/day_3.txt") as rf:
-    binary = rf.read().split('\n')
+    binary = rf.read().split("\n")
 
 # for i in range(len(binary[-1])):
 #     zeroes = 0
@@ -37,10 +37,10 @@ for i in range(len(oxygen_binary[-1])):
     zeroes_index_list = []
     for j, num in enumerate(oxygen_binary):
         # Per whole number loop
-        if num[i] == '0':
+        if num[i] == "0":
             zeroes += 1
             zeroes_index_list.append(j)
-        elif num[i] == '1':
+        elif num[i] == "1":
             ones += 1
             ones_index_list.append(j)
     if ones >= zeroes:
@@ -62,10 +62,10 @@ for i in range(len(co2_binary[-1])):
     zeroes_index_list = []
     for j, num in enumerate(co2_binary):
         # Per whole number loop
-        if num[i] == '0':
+        if num[i] == "0":
             zeroes += 1
             zeroes_index_list.append(j)
-        elif num[i] == '1':
+        elif num[i] == "1":
             ones += 1
             ones_index_list.append(j)
     if ones >= zeroes:
