@@ -59,7 +59,6 @@ def main():
 
     cheapest_alignment_position = get_cheapest_fuel_cost(cost_per_position_dict)
 
-    pprint(cost_per_position_dict)
     print(cheapest_alignment_position)
 
 
