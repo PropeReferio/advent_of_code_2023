@@ -45,12 +45,14 @@ def dfs(grid, visited, y, x, basin_size, basin_sizes):
     basin_sizes.append(basin_size)
 
 
-def get_basin_sizes(grid, visited, basin_sizes):
+def get_basin_sizes(grid, visited, basin_sizes, real_basin_sizes):
     for y, row in enumerate(grid):
         for x, height in enumerate(row):
             basin_size = 0
+            basin_sizes = []
             if grid[y][x] != 9 and visited[y][x] is False:
                 dfs(grid, visited, y, x, basin_size, basin_sizes)
+                real_basin_sizes.append(len(basin_sizes))
 
 
 def main():
@@ -64,8 +66,10 @@ def main():
     if basins:
         visited = [[False for height in row] for row in grid]
         basin_sizes = []
-        get_basin_sizes(grid, visited, basin_sizes)
-        print(len(basin_sizes))
+        real_basin_sizes = []
+        get_basin_sizes(grid, visited, basin_sizes, real_basin_sizes)
+        real_basin_sizes.sort()
+        print(real_basin_sizes[-1] * real_basin_sizes[-2] * real_basin_sizes[-3])
     else:
         low_points = []
         for i, row in enumerate(grid):
