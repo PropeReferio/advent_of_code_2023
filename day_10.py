@@ -2,40 +2,17 @@ from argparse import ArgumentParser
 from pprint import pprint
 
 
-bracket_scores = {
-    ')': 3,
-    ']': 57,
-    '}': 1197,
-    '>': 25137,
-}
-
-bracket_pairs = {
-    '}': '{',
-    ']': '[',
-    ')': '(',
-    '>': '<'
-}
-
-
 def get_characters(testing=False):
-    if testing:
-        with open("./example_inputs/day_10.txt", "r") as read_file:
-            rows = read_file.read().split('\n')
-    else:
-        with open("./inputs/day_10.txt", "r") as read_file:
-            rows = read_file.read().split('\n')
+    file_path = "./example_inputs/day_10.txt" if testing else "./inputs/day_10.txt"
+    with open(file_path, "r") as read_file:
+        rows = read_file.read().split("\n")
 
     return rows
 
 
 def determine_remaining_chars(stack):
     remaining_chars = []
-    opposite_brace = {
-        '[': ']',
-        '(': ')',
-        '{': '}',
-        '<': '>'
-    }
+    opposite_brace = {"[": "]", "(": ")", "{": "}", "<": ">"}
     for char in stack[::-1]:
         remaining_chars.append(opposite_brace[char])
 
@@ -44,10 +21,10 @@ def determine_remaining_chars(stack):
 
 def score_remaining_chars(remaining_chars):
     completion_scores = {
-        ')': 1,
-        ']': 2,
-        '}': 3,
-        '>': 4,
+        ")": 1,
+        "]": 2,
+        "}": 3,
+        ">": 4,
     }
     score = 0
     for char in remaining_chars:
@@ -56,7 +33,18 @@ def score_remaining_chars(remaining_chars):
 
     return score
 
+
 def score_row_of_chars(row, complete=False):
+
+    bracket_pairs = {"}": "{", "]": "[", ")": "(", ">": "<"}
+
+    bracket_scores = {
+        ")": 3,
+        "]": 57,
+        "}": 1197,
+        ">": 25137,
+    }
+
     stack = []
     broken = False
     for char in row:
@@ -81,12 +69,8 @@ def score_row_of_chars(row, complete=False):
         if broken:
             return
         else:
-            # Take remaining stack, iterate over it backwards, grab the opposite pair
             remaining_chars = determine_remaining_chars(stack)
             return score_remaining_chars(remaining_chars)
-            # determine remaining chars, score and append them
-        # Confirm that this is the point where an incomplete row
-        # is, and no other such situation.
 
 
 def main():
@@ -100,13 +84,9 @@ def main():
     if complete:
         scores = []
         for row in rows:
-            # remaining_chars = complete_row(row)
-            # score_incomplete_rows()
             scores.append(score_row_of_chars(row, complete))
-            # This will append a score to scores
         scores = list(filter(lambda el: el is not None, scores))
         scores.sort()
-        # Does this keep the scores sorted?
         middle_index = len(scores) // 2
         return scores[middle_index]
     else:

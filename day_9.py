@@ -5,10 +5,10 @@ from pprint import pprint
 def get_grid(testing=False):
     if testing:
         with open("./example_inputs/day_9.txt", "r") as read_file:
-            rows = read_file.read().split('\n')
+            rows = read_file.read().split("\n")
     else:
         with open("./inputs/day_9.txt", "r") as read_file:
-            rows = read_file.read().split('\n')
+            rows = read_file.read().split("\n")
 
     grid = [[int(height) for height in row] for row in rows]
     return grid
@@ -18,23 +18,30 @@ def is_low_point(cell, grid, i, j):
     row_length = len(grid[0]) - 1
     column_length = len(grid) - 1
     if i < column_length:
-        if cell >= grid[i+1][j]:
+        if cell >= grid[i + 1][j]:
             return False
     if i > 0:
-        if cell >= grid[i-1][j]:
+        if cell >= grid[i - 1][j]:
             return False
     if j < row_length:
-        if cell >= grid[i][j+1]:
+        if cell >= grid[i][j + 1]:
             return False
     if j > 0:
-        if cell >= grid[i][j-1]:
+        if cell >= grid[i][j - 1]:
             return False
 
     return True
 
 
 def dfs(grid, visited, y, x, basin_size, basin_sizes):
-    if y < 0 or x < 0 or y >= len(grid) or x >= len(grid[0]) or visited[y][x] or grid[y][x] == 9:
+    if (
+        y < 0
+        or x < 0
+        or y >= len(grid)
+        or x >= len(grid[0])
+        or visited[y][x]
+        or grid[y][x] == 9
+    ):
         return
     basin_size += 1
     visited[y][x] = True
