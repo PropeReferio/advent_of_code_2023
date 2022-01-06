@@ -13,10 +13,10 @@ def get_paper_dots(testing=False):
     fold_instructions = []
 
     for line in lines:
-        if ',' in line:
-            x, y = line.split(',')
+        if "," in line:
+            x, y = line.split(",")
             coords.append((int(x), int(y)))
-        elif 'f' in line:
+        elif "f" in line:
             fold_instructions.append(line)
 
     dots_paper = get_dots(coords)
@@ -28,10 +28,10 @@ def get_paper_dots(testing=False):
 def get_dots(coords):
     x_axis_len = max([coord[0] for coord in coords])
     y_axis_len = max([coord[1] for coord in coords])
-    grid = [['.' for _ in range(x_axis_len + 1)] for _ in range(y_axis_len + 1)]
+    grid = [["." for _ in range(x_axis_len + 1)] for _ in range(y_axis_len + 1)]
     for coord in coords:
         x, y = coord
-        grid[y][x] = '#'
+        grid[y][x] = "#"
 
     return grid
 
@@ -49,24 +49,24 @@ def get_fold_instructions(fold_instructions):
 def fold(dots_paper, instruction):
     direction = instruction[0]
     fold_line = instruction[1]
-    if direction == 'y':
-        for y in range(fold_line+1, len(dots_paper)):
+    if direction == "y":
+        for y in range(fold_line + 1, len(dots_paper)):
             cur_line = dots_paper[y]
             for x, symbol in enumerate(cur_line):
-                if symbol == '#':
+                if symbol == "#":
                     dist_from_fold = y - fold_line
-                    dots_paper[fold_line - dist_from_fold][x] = '#'
+                    dots_paper[fold_line - dist_from_fold][x] = "#"
         dots_paper = dots_paper[0:fold_line]
 
-    elif direction == 'x':
-        for x in range(fold_line+1, len(dots_paper[0])):
+    elif direction == "x":
+        for x in range(fold_line + 1, len(dots_paper[0])):
             cur_col = []
             for line in dots_paper:
                 cur_col.append(line[x])
             for y, symbol in enumerate(cur_col):
-                if symbol == '#':
+                if symbol == "#":
                     dist_from_fold = x - fold_line
-                    dots_paper[y][fold_line - dist_from_fold] = '#'
+                    dots_paper[y][fold_line - dist_from_fold] = "#"
         # Lose remainder of paper:
         dots_paper = [line[0:fold_line] for line in dots_paper]
 
@@ -77,7 +77,7 @@ def count_hashes(dots_paper):
     num_hashes = 0
     for y in range(len(dots_paper)):
         for x in range(len(dots_paper[0])):
-            if dots_paper[y][x] == '#':
+            if dots_paper[y][x] == "#":
                 num_hashes += 1
 
     return num_hashes

@@ -28,7 +28,12 @@ def flash_single_octopus_and_increment_adjacent(grid, x, y, total_flashes):
     boundary = range(10)
     for y_adj in range(-1, 2):
         for x_adj in range(-1, 2):
-            if x_adj == 0 and y_adj == 0 or not y + y_adj in boundary or not x + x_adj in boundary:
+            if (
+                x_adj == 0
+                and y_adj == 0
+                or not y + y_adj in boundary
+                or not x + x_adj in boundary
+            ):
                 continue
             else:
                 if grid[y + y_adj][x + x_adj] != 0:
@@ -36,12 +41,13 @@ def flash_single_octopus_and_increment_adjacent(grid, x, y, total_flashes):
     return grid, total_flashes
 
 
-
 def flash_octopi(grid, total_flashes):
     for y, row in enumerate(grid):
         for x, octopus in enumerate(row):
             if octopus > 9:
-                grid, total_flashes = flash_single_octopus_and_increment_adjacent(grid, x, y, total_flashes)
+                grid, total_flashes = flash_single_octopus_and_increment_adjacent(
+                    grid, x, y, total_flashes
+                )
 
     return grid, total_flashes
 

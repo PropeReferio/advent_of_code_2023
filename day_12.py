@@ -15,7 +15,7 @@ def get_cave_edges(testing=False):
 def generate_graph(edges):
     graph = {}
     for edge in edges:
-        left, right = edge.split('-')
+        left, right = edge.split("-")
         if left not in graph:
             graph[left] = []
         graph[left].append(right)
@@ -40,15 +40,14 @@ def dfs(graph, paths, cur_path=[]):
     # I need to reset visited, somehow... or rather, just use
     # if small cave not in paths, go there and append.
     if len(cur_path) == 0:
-        cur_path.append('start')
+        cur_path.append("start")
 
     cur_cave = cur_path[-1]
-    if cur_cave == 'end':
+    if cur_cave == "end":
         paths.append(cur_path)
         return paths
     # TODO cur_path doesn't get cleared... it goes back to the other
     # branch, but still has the cur_path of the original branch.
-
 
     for option in graph[cur_cave]:
         if option in cur_path and option.islower():
