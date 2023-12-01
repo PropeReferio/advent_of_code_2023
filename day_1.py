@@ -1,26 +1,67 @@
+from argparse import ArgumentParser
 from pathlib import Path
+from typing import List
 
-# To do this, count the number of times a depth measurement increases from
-# the previous measurement. (There is no measurement before the first
 
-with open(Path("C:/Users/boste/OneDrive/Desktop/day_1_input.txt"), "r") as rf:
-    depths = [int(depth) for depth in rf.read().split()]
+WORD_NUMBERS_MAP = {
+    "one": "1",
+    "two": "2",
+    "three": "3",
+    "four": "4",
+    "five": "5",
+    "six": "6",
+    "seven": "7",
+    "eight": "8",
+    "nine": "9",
+}
 
-increases = 0
 
-for i in range(1, len(depths)):
-    if depths[i] > depths[i - 1]:
-        increases += 1
+def get_calibration_input(testing=False) -> List[str]:
+    file_name = Path(__file__).parts[-1].replace(".py", ".txt")
+    file_path = Path("./example_inputs" if testing else "./inputs").joinpath(file_name)
+    with open(file_path, "r") as read_file:
+        lines = read_file.read().split("\n")
 
-# print(increases)
+    return lines
 
-# Pt. 2 - comparing sum of three depths
-increases = 0
 
-for i in range(3, len(depths)):
-    group_a = sum([depths[i - 1], depths[i - 2], depths[i - 3]])
-    group_b = sum([depths[i], depths[i - 1], depths[i - 2]])
-    if group_b > group_a:
-        increases += 1
+def get_nums_from_input(all_nums: List[int], input: str, words: bool=False):
+    first_digit, last_digit = None, None
+    cur_string = ""
+    for char in input:
+        cur_string += char
+        if char.isdigit():
+            if first_digit is None:
+                first_digit = char
+            last_digit = char
+        elif words:
+            for k, v in WORD_NUMBERS_MAP.items():
+                if cur_string.endswith(k):
+                    if first_digit is None:
+                        first_digit = v
+                    last_digit = v
+    all_nums.append(int(first_digit + last_digit if last_digit else first_digit + first_digit))
 
-print(increases)
+
+def main():
+    parser = ArgumentParser()
+    parser.add_argument("-t", "--testing", action="store_true")
+    parser.add_argument("-w", "--words", action="store_true")
+    args = parser.parse_args()
+    testing = args.testing
+    words_also = args.words
+    inputs = get_calibration_input(testing)
+
+    all_nums: List[int] = []
+
+    if words_also:
+        for input in inputs:
+            get_nums_from_input(all_nums, input, words=words_also)
+    else:
+        for input in inputs:
+            get_nums_from_input(all_nums, input)
+
+    print(sum(all_nums))
+
+
+main()
