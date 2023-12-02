@@ -9,10 +9,10 @@ def convert_text_to_coordinates(testing=False):
     :return:
     """
     if testing:
-        with open("./example_inputs/day_5.txt", "r") as read_file:
+        with open("input/example_inputs/day_5.txt", "r") as read_file:
             line_points = read_file.read().split("\n")
     else:
-        with open("./inputs/day_5.txt", "r") as read_file:
+        with open("input/inputs/day_5.txt", "r") as read_file:
             line_points = read_file.read().split("\n")
 
     line_points = [coord.split(" -> ") for coord in line_points]

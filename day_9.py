@@ -4,10 +4,10 @@ from pprint import pprint
 
 def get_grid(testing=False):
     if testing:
-        with open("./example_inputs/day_9.txt", "r") as read_file:
+        with open("input/example_inputs/day_9.txt", "r") as read_file:
             rows = read_file.read().split("\n")
     else:
-        with open("./inputs/day_9.txt", "r") as read_file:
+        with open("input/inputs/day_9.txt", "r") as read_file:
             rows = read_file.read().split("\n")
 
     grid = [[int(height) for height in row] for row in rows]

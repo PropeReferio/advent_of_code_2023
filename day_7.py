@@ -4,10 +4,10 @@ from pprint import pprint
 
 def get_initial_crabs(testing=False):
     if testing:
-        with open("./example_inputs/day_7.txt", "r") as read_file:
+        with open("input/example_inputs/day_7.txt", "r") as read_file:
             crabs = read_file.read()
     else:
-        with open("./inputs/day_7.txt", "r") as read_file:
+        with open("input/inputs/day_7.txt", "r") as read_file:
             crabs = read_file.read()
 
     crabs = list(map(lambda x: int(x), crabs.split(",")))

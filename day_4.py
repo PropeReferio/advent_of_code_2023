@@ -1,5 +1,5 @@
 def create_boards():
-    with open("./inputs/day_4.txt", "r") as rf:
+    with open("input/inputs/day_4.txt", "r") as rf:
         boards = rf.read().split("\n\n")
     call_numbers = boards[0].split(",")
     boards = boards[1:]

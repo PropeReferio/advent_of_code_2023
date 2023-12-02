@@ -6,10 +6,10 @@ from collections import Counter
 
 def get_initial_fish(testing=False):
     if testing:
-        with open("./example_inputs/day_6.txt", "r") as read_file:
+        with open("input/example_inputs/day_6.txt", "r") as read_file:
             fish = read_file.read()
     else:
-        with open("./inputs/day_6.txt", "r") as read_file:
+        with open("input/inputs/day_6.txt", "r") as read_file:
             fish = read_file.read()
 
     fish = list(map(lambda x: int(x), fish.split(",")))

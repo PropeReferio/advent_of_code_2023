@@ -3,10 +3,10 @@ from argparse import ArgumentParser
 
 def get_display_output(testing=False):
     if testing:
-        with open("./example_inputs/day_8.txt", "r") as read_file:
+        with open("input/example_inputs/day_8.txt", "r") as read_file:
             display = read_file.read().split("\n")
     else:
-        with open("./inputs/day_8.txt", "r") as read_file:
+        with open("input/inputs/day_8.txt", "r") as read_file:
             display = read_file.read().split("\n")
 
     return display

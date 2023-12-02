@@ -2,7 +2,7 @@ from collections import Counter
 
 epsilon, gamma = "", ""
 
-with open("./inputs/day_3.txt") as rf:
+with open("input/inputs/day_3.txt") as rf:
     binary = rf.read().split("\n")
 
 # for i in range(len(binary[-1])):
