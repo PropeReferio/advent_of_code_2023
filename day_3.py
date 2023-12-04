@@ -29,11 +29,22 @@ class Star:
     numbers_adjacent: List[int]
 
     @property
-    def line_before(self):
+    def line_before(self) -> int:
         return max(self.y - 1, 0)
 
-    def line_after(self, num_of_rows):
+    def line_after(self, num_of_rows) -> int:
         return min(self.y + 1, num_of_rows - 1)
+
+    @property
+    def is_gear(self) -> bool:
+        return len(self.numbers_adjacent) == 2
+
+    @property
+    def gear_ratio(self) -> bool:
+        if self.is_gear:
+            return math.prod(self.numbers_adjacent)
+        else:
+            return 0
 
 
 def compare_two_lines_for_part_numbers(possible_part_nums: List[PartNumWithCoords], symbols: List[int], seen_nums: Set, part_numbers_total: int):
@@ -80,8 +91,8 @@ def sum_all_gear_ratios(input_lines: List[str], gear_ratios: List[int]):
                 if star.x in num.get_x_coord_range():
                     star.numbers_adjacent.append(num.num)
 
-        if len(star.numbers_adjacent) == 2:
-            gear_ratios.append(math.prod(star.numbers_adjacent))
+        if star.is_gear:
+            gear_ratios.append(star.gear_ratio)
 
 
 def sum_all_part_numbers(input_lines: List[str], part_numbers_total: int) -> Dict:
