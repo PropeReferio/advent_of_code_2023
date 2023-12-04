@@ -37,8 +37,6 @@ def parse_cube_game_lines(input_lines: List[str]) -> Dict:
 
 
 def is_game_possible(game_data: List[Dict]) -> bool:
-    {'blue': 3, 'red': 4}
-
     for round in game_data:
         for color, num in round.items():
             if CUBES_MAP[color] < num:
@@ -49,7 +47,6 @@ def is_game_possible(game_data: List[Dict]) -> bool:
 
 def get_least_possible_cubes_per_game(game_data: List[Dict]) -> List[int]:
     least_possible_cubes = {'red': 0, 'blue': 0, 'green': 0}
-    [{'blue': 3, 'red': 4}, {'red': 1, 'green': 2, 'blue': 6}, {'green': 2}]
     for _round in game_data:
         for color in COLORS:
             least_possible_cubes[color] = max(least_possible_cubes[color], _round.get(color, 0))
