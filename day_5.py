@@ -1,103 +1,102 @@
 from argparse import ArgumentParser
-from pprint import pprint
+from pathlib import Path
+from typing import List, Dict, Tuple, Set
+from dataclasses import dataclass
+
+from utils.files import list_input_lines
 
 
-def convert_text_to_coordinates(testing=False):
-    """
-    Takes the text input and returns data useable by
-    Python
-    :return:
-    """
-    if testing:
-        with open("input/example_inputs/day_5.txt", "r") as read_file:
-            line_points = read_file.read().split("\n")
-    else:
-        with open("input/inputs/day_5.txt", "r") as read_file:
-            line_points = read_file.read().split("\n")
+@dataclass
+class SourceDestValues:
+    dest: int
+    source: int
+    _range: int
 
-    line_points = [coord.split(" -> ") for coord in line_points]
-    return line_points
+    @property
+    def dest_source_difference(self) -> int:
+        return self.source - self.dest
+
+    @property
+    def range_object(self) -> range:
+        return range(self.source, self.source + self._range)
 
 
-def add_vert_horiz_line_to_grid(start, stop, grid):
-    """
-    Increments points on the grid where the line falls.
-    """
-    if start[0] == stop[0]:
-        seg_begin, seg_end = sorted([int(start[1]), int(stop[1])])
-        for y_coord in range(seg_begin, seg_end + 1):
-            grid[y_coord][int(start[0])] += 1
-    elif start[1] == stop[1]:
-        seg_begin, seg_end = sorted([int(start[0]), int(stop[0])])
-        for x_coord in range(seg_begin, seg_end + 1):
-            grid[int(start[1])][x_coord] += 1
-
-
-def add_diagonal_line_to_grid(start, stop, grid):
-    x_diff_positive = int(stop[0]) > int(start[0])
-    y_diff_positive = int(stop[1]) > int(start[1])
-    length = abs(int(stop[1]) - int(start[1]))
-    cur_point = (int(start[0]), int(start[1]))
-    grid[cur_point[1]][cur_point[0]] += 1
-    for i in range(length):
-        new_x_coord = cur_point[0] + 1 if x_diff_positive else cur_point[0] - 1
-        new_y_coord = cur_point[1] + 1 if y_diff_positive else cur_point[1] - 1
-        cur_point = (new_x_coord, new_y_coord)
-        grid[cur_point[1]][cur_point[0]] += 1
-
-
-def is_line_vert_or_horiz(start, stop):
-    """
-    Returns True if horizontal or vertical.
-    :return: boolean
-    """
-    return start[0] == stop[0] or start[1] == stop[1]
-
-
-def calculate_danger_points(grid):
-    count = 0
-    for lst in grid:
-        for element in lst:
-            if element > 1:
-                count += 1
-    return count
+def parse_source_dest_values(line):
+    parts = line.split(' ')
+    return SourceDestValues(
+        int(parts[0]),
+        int(parts[1]),
+        int(parts[2])
+    )
 
 
 def main():
     parser = ArgumentParser()
     parser.add_argument("-t", "--testing", action="store_true")
-    parser.add_argument(
-        "-d", "--diagonal", action="store_true", help="Count diagonal lines also."
-    )
+    parser.add_argument("-p", "--part-one", action="store_true")
     args = parser.parse_args()
-    testing = args.testing
-    diagonal = args.diagonal
-    line_points = convert_text_to_coordinates(testing=testing)
+    testing: bool = args.testing
+    part_one: bool = args.part_one
 
-    # Step 2: Create 999 x 999 grid that increments values when a line crosses a point
-    grid = [
-        [0 for i in range(10 if testing else 1000)]
-        for _ in range(10 if testing else 1000)
+    lines = list_input_lines(Path(__file__), testing, True)
+
+    seed_to_soil_map = list()
+    soil_to_fertilizer_map = list()
+    fertilizer_to_water_map = list()
+    water_to_light_map = list()
+    light_to_temperature_map = list()
+    temperature_to_humidity_map = list()
+    humidity_to_location_map = list()
+
+    ordered_dicts = [
+        seed_to_soil_map,
+        soil_to_fertilizer_map,
+        fertilizer_to_water_map,
+        water_to_light_map,
+        light_to_temperature_map,
+        temperature_to_humidity_map,
+        humidity_to_location_map
     ]
 
-    # Step 3: Add horizontal and vertical lines to grid
-    for line_seg in line_points:
-        start, stop = line_seg[0].split(","), line_seg[1].split(",")
-        if diagonal:
-            if is_line_vert_or_horiz(start, stop):
-                add_vert_horiz_line_to_grid(start, stop, grid)
-            else:
-                add_diagonal_line_to_grid(start, stop, grid)
-        else:
-            if not is_line_vert_or_horiz(start, stop):
-                continue
-            add_vert_horiz_line_to_grid(start, stop, grid)
+    seeds: List[int] = list(map(lambda x: int(x), lines[0].split(':')[1].strip().split(' ')))
+    if not part_one:
+        seeds = parse_seed_ranges(seeds)
+    parse_almanac_mappings(lines, ordered_dicts)
+    locations: List[int] = get_location_values_for_seeds(ordered_dicts, seeds)
+    print(min(locations))
 
-    # Step 4: Score the grid: Find points with a value of 2 or higher
-    danger_points = calculate_danger_points(grid)
-    print(danger_points)
-    if testing:
-        pprint(grid)
+
+def get_location_values_for_seeds(ordered_dicts, seeds):
+    locations: List[int] = []
+    for seed in seeds:
+        cur_val = seed
+        for mapping in ordered_dicts:
+            for value_object in mapping:
+                if cur_val in value_object.range_object:
+                    cur_val = cur_val - value_object.dest_source_difference
+                    break
+
+        locations.append(cur_val)
+
+
+def parse_almanac_mappings(lines, ordered_dicts):
+    cur_dict_idx = 0
+    for line in lines[3:]:
+        if line == '':
+            cur_dict_idx += 1
+        elif line[0].isdigit():
+            source_dest_values: SourceDestValues = parse_source_dest_values(line)
+            ordered_dicts[cur_dict_idx].append(source_dest_values)
+
+
+def parse_seed_ranges(seeds):
+    seeds_start_values = seeds[0::2]
+    seeds_range_values = seeds[1::2]
+    seeds = []
+    for i, start_val in enumerate(seeds_start_values):
+        seeds.extend(list(range(start_val, start_val + seeds_range_values[i])))
+    print(len(seeds))
+    return seeds
 
 
 main()
