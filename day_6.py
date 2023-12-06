@@ -1,68 +1,77 @@
+import math
 from argparse import ArgumentParser
-from collections import Counter
+from pathlib import Path
+from typing import List, Dict, Tuple, Set
+from dataclasses import dataclass
 
-# How many lanternfish would there be after 80 days?
-
-
-def get_initial_fish(testing=False):
-    if testing:
-        with open("input/example_inputs/day_6.txt", "r") as read_file:
-            fish = read_file.read()
-    else:
-        with open("input/inputs/day_6.txt", "r") as read_file:
-            fish = read_file.read()
-
-    fish = list(map(lambda x: int(x), fish.split(",")))
-
-    return fish
-
-
-def pass_a_day_fish_cycle(fish_day_dict):
-    # Step 1: If there are 14 0-day fish, eliminate those
-    # and create 14 6-day and 14 8-day fish.
-    sixes = eights = fish_day_dict[0]
-    # Step 2: Move all 3-day fish to 2-day, 2-day fish to 1-day, etc.
-    zeroes = fish_day_dict[1]
-    ones = fish_day_dict[2]
-    twoes = fish_day_dict[3]
-    threes = fish_day_dict[4]
-    fours = fish_day_dict[5]
-    fives = fish_day_dict[6]
-    sixes += fish_day_dict[7]
-    sevens = fish_day_dict[8]
-
-    dict_after_day_passes = {
-        0: zeroes,
-        1: ones,
-        2: twoes,
-        3: threes,
-        4: fours,
-        5: fives,
-        6: sixes,
-        7: sevens,
-        8: eights,
-    }
-
-    return dict_after_day_passes
+from utils.files import list_input_lines
 
 
 def main():
     parser = ArgumentParser()
     parser.add_argument("-t", "--testing", action="store_true")
-    parser.add_argument("-d", "--days", type=int)
+    parser.add_argument("-p", "--part-one", action="store_true")
     args = parser.parse_args()
-    testing = args.testing
-    days = args.days
-    fish = get_initial_fish(testing)
+    testing: bool = args.testing
+    part_one: bool = args.part_one
 
-    fish_day_dict = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0} | dict(
-        Counter(fish)
-    )
+    lines = list_input_lines(Path(__file__), testing, True)
 
-    for _ in range(days):
-        fish_day_dict = pass_a_day_fish_cycle(fish_day_dict)
+    if part_one:
+        times, times_distance_maps = parse_multiple_races_and_times(lines)
+        ways_to_win = count_all_successes(times, times_distance_maps)
 
-    print(sum(fish_day_dict.values()))
+        print(math.prod(ways_to_win))
+    else:
+        record, time = parse_single_race_and_time(lines)
+
+        count_failures_from_extreme_ends(record, time)
+
+
+def count_all_successes(times, times_distance_maps):
+    ways_to_win = []
+    for time in times:
+        victories = []
+        for i in range(1, time):
+            dist = i * (time - i)
+            if dist > times_distance_maps[time]:
+                victories.append(dist)
+        ways_to_win.append(len(victories))
+    return ways_to_win
+
+
+def count_failures_from_extreme_ends(record, time):
+    # Go both ways, from 0 forwards, and from 53897698 backwards. Count each attempt, each failure.
+    # once you find a success, exit. subtract all your failures from the number time. that's your answer.
+    failures = 0
+    for i in range(1, time):
+        if (time - i) * i > record:
+            break
+        else:
+            failures += 1
+    for j in range(time, 0, -1):
+        if (time - j) * j > record:
+            break
+        else:
+            failures += 1
+    print(time - failures)
+
+
+def parse_single_race_and_time(lines):
+    time = lines[0].split(":")[1].strip().split(" ")
+    time = int(''.join(time))
+    record = lines[1].split(":")[1].strip().split(" ")
+    record = int(''.join(record))
+    return record, time
+
+
+def parse_multiple_races_and_times(lines):
+    times = lines[0].split(":")[1].strip().split(" ")
+    times = [int(x) for x in times if x != '']
+    records = lines[1].split(":")[1].strip().split(" ")
+    records = [int(x) for x in records if x != '']
+    times_distance_maps = dict(zip(times, records))
+    return times, times_distance_maps
 
 
 main()
