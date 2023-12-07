@@ -1,73 +1,139 @@
 from argparse import ArgumentParser
-from pprint import pprint
+from collections import Counter
+from operator import attrgetter
+from pathlib import Path
+
+from enum import StrEnum, auto
+
+from utils.files import list_input_lines
 
 
-def get_initial_crabs(testing=False):
-    if testing:
-        with open("input/example_inputs/day_7.txt", "r") as read_file:
-            crabs = read_file.read()
-    else:
-        with open("input/inputs/day_7.txt", "r") as read_file:
-            crabs = read_file.read()
-
-    crabs = list(map(lambda x: int(x), crabs.split(",")))
-
-    return crabs
+class HandTypeEnum(StrEnum):
+    five_of_a_kind = auto()
+    four_of_a_kind = auto()
+    full_house = auto()
+    three_of_a_kind = auto()
+    two_pair = auto()
+    one_pair = auto()
+    high_card = auto()
 
 
-def calculate_fuel_at_position(
-    target_position, cost_per_position_dict, crabs, cache, increasing=False
-):
-    fuel_consumed = 0
-    for position in crabs:
-        distance_to_travel = abs(target_position - position)
-        if increasing:
-            if distance_to_travel in cache.keys():
-                fuel_consumed += cache[distance_to_travel]
+class Hand:
+
+    def __init__(self, hand:str, bid: int, part_two: bool):
+        self.hand = hand
+        self.bid = bid
+        self.rank = None
+        self.card_rankings = self.get_card_rankings(part_two=part_two)
+        self.hand_type = self.get_hand_type(part_two=part_two)
+
+    def get_hand_type(self, part_two=False):
+        if part_two:
+            cards_remaining = self.hand.replace('J', '')
+            counter = Counter(cards_remaining)
+            jokers = 5 - len(cards_remaining)
+            counts = list(counter.values())
+            counts.sort()
+            if len(counts):
+                counts[-1] += jokers
             else:
-                cache[distance_to_travel] = sum(
-                    [1 + i for i in range(distance_to_travel)]
-                )
-                fuel_consumed += cache[distance_to_travel]
+                counts = [5]
         else:
-            fuel_consumed += distance_to_travel
-    cost_per_position_dict[target_position] = fuel_consumed
+            counter = Counter(self.hand)
+            counts = list(counter.values()).sort()
+        if 5 in counts:
+            return HandTypeEnum.five_of_a_kind
+        elif 4 in counts:
+            return HandTypeEnum.four_of_a_kind
+        elif 3 in counts and 2 in counts:
+            return HandTypeEnum.full_house
+        elif 3 in counts:
+            return HandTypeEnum.three_of_a_kind
+        elif counts == [1, 2, 2]:
+            return HandTypeEnum.two_pair
+        elif 2 in counts:
+            return HandTypeEnum.one_pair
+        else:
+            return HandTypeEnum.high_card
+
+    def get_card_rankings(self, part_two):
+        rankings = []
+        card_values = {'A': 13, 'K': 12, 'Q': 11, 'J': 0 if part_two else 10, 'T': 9, '9': 8, '8': 7, '7': 6, '6': 5, '5': 4, '4': 3, '3': 2, '2': 1}
+        for card in self.hand:
+            rankings.append(card_values[card])
+
+        return rankings
+
+    def __repr__(self):
+        return f"Hand: {self.hand} Type: {self.hand_type} Cards Ranked: {self.card_rankings} Bid: {self.bid}"
 
 
 def main():
     parser = ArgumentParser()
     parser.add_argument("-t", "--testing", action="store_true")
-    parser.add_argument("-i", "--increasing-cost", action="store_true")
+    parser.add_argument("-p", "--part-one", action="store_true")
     args = parser.parse_args()
-    testing = args.testing
-    increasing_cost = args.increasing_cost
-    crabs = get_initial_crabs(testing)
+    testing: bool = args.testing
+    part_one: bool = args.part_one
 
-    lowest_position = min(crabs)
-    highest_position = max(crabs)
-    range_to_check = range(lowest_position, highest_position + 1)
-    cost_per_position_dict = {num: 0 for num in range_to_check}
+    lines = list_input_lines(Path(__file__), testing, True)
 
-    # Easy naive approach. Calculate the fuel required to move to each position, then
-    # select the cheapest.
-    cache = {}
-    # Using a cache made the program way faster.
-    for position in range_to_check:
-        calculate_fuel_at_position(
-            position, cost_per_position_dict, crabs, cache, increasing=increasing_cost
-        )
+    hands_by_type = {
+        HandTypeEnum.five_of_a_kind: [],
+        HandTypeEnum.four_of_a_kind: [],
+        HandTypeEnum.full_house: [],
+        HandTypeEnum.three_of_a_kind: [],
+        HandTypeEnum.two_pair: [],
+        HandTypeEnum.one_pair: [],
+        HandTypeEnum.high_card: []
+    }
+    # Step 1: Make a list of hand objects
+    hands = map_hands_to_bids(lines, part_two=not part_one)
 
-    cheapest_alignment_position = get_cheapest_fuel_cost(cost_per_position_dict)
+    # Step 2: Make a new dict of rank: bid
+    for hand in hands:
+        hands_by_type[hand.hand_type].append(hand)
 
-    print(cheapest_alignment_position)
+    # Step 3: sort hands_by_type by card_rankings property
+    low_to_high = sort_hands_by_rank(hands_by_type)
+
+    print_sum_winnings(low_to_high)
 
 
-def get_cheapest_fuel_cost(cost_per_position_dict):
-    min_fuel_cost = None
-    for value in cost_per_position_dict.values():
-        if min_fuel_cost is None or (value < min_fuel_cost):
-            min_fuel_cost = value
-    return min_fuel_cost
+def sort_hands_by_rank(hands_by_type):
+    for hand_type, hands_list in hands_by_type.items():
+        hands_list.sort(key=attrgetter('card_rankings'), reverse=True)
+    high_to_low = []
+    for hand_type in [
+        HandTypeEnum.five_of_a_kind,
+        HandTypeEnum.four_of_a_kind,
+        HandTypeEnum.full_house,
+        HandTypeEnum.three_of_a_kind,
+        HandTypeEnum.two_pair,
+        HandTypeEnum.one_pair,
+        HandTypeEnum.high_card
+    ]:
+        high_to_low.extend(hands_by_type[hand_type])
+    low_to_high = reversed(high_to_low)
+    return low_to_high
+
+
+def print_sum_winnings(low_to_high):
+    # Step 3: Sum(rank * bid)
+    winnings = []
+    for i, hand in enumerate(low_to_high):
+        winnings.append((i + 1) * hand.bid)
+    print(winnings)
+    print((sum(winnings)))
+
+
+def map_hands_to_bids(lines, part_two: bool):
+    hands = []
+    for line in lines:
+        split_line = line.split(' ')
+        hand = Hand(split_line[0], int(split_line[1]), part_two)
+        hands.append(hand)
+    return hands
 
 
 main()
