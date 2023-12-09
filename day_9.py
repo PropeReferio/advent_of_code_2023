@@ -1,90 +1,68 @@
 from argparse import ArgumentParser
-from pprint import pprint
+from pathlib import Path
+from typing import List, Optional
+
+from utils.files import list_input_lines
 
 
-def get_grid(testing=False):
-    if testing:
-        with open("input/example_inputs/day_9.txt", "r") as read_file:
-            rows = read_file.read().split("\n")
-    else:
-        with open("input/inputs/day_9.txt", "r") as read_file:
-            rows = read_file.read().split("\n")
+class ValuesHistory:
+    def __init__(self, history):
+        self.history: List[int] = history
+        self.lists_of_differences: List[int] = self.get_lists_of_differences()
 
-    grid = [[int(height) for height in row] for row in rows]
-    return grid
+    def get_lists_of_differences(self):
+        cur_diff: Optional[List[int]] = None
+        diffs: List[List[int]] = []
+        while True:
+            if not cur_diff:
+                cur_diff = []
+                for i, num in enumerate(self.history[1:], start=1):
+                    cur_diff.append(num - self.history[i - 1])
+                diffs.append(cur_diff)
+            else:
+                new_diff = []
+                for i, num in enumerate(cur_diff[1:], start=1):
+                    new_diff.append(num - cur_diff[i - 1])
+                diffs.append(new_diff)
+                cur_diff = new_diff
+                if all([val == 0 for val in cur_diff]):
+                    break
+        return diffs
 
+    @property
+    def extrapolated_value(self):
+        return self.history[-1] + sum(
+            [_list[-1] for _list in self.lists_of_differences]
+        )
 
-def is_low_point(cell, grid, i, j):
-    row_length = len(grid[0]) - 1
-    column_length = len(grid) - 1
-    if i < column_length:
-        if cell >= grid[i + 1][j]:
-            return False
-    if i > 0:
-        if cell >= grid[i - 1][j]:
-            return False
-    if j < row_length:
-        if cell >= grid[i][j + 1]:
-            return False
-    if j > 0:
-        if cell >= grid[i][j - 1]:
-            return False
+    @property
+    def reverse_extrapolated_value(self):
+        cur_num = 0
+        reversed = self.lists_of_differences[::-1] + [self.history]
+        for i, diff in enumerate(reversed, start=1):
+            cur_num = diff[0] - cur_num
 
-    return True
-
-
-def dfs(grid, visited, y, x, basin_size, basin_sizes):
-    if (
-        y < 0
-        or x < 0
-        or y >= len(grid)
-        or x >= len(grid[0])
-        or visited[y][x]
-        or grid[y][x] == 9
-    ):
-        return
-    basin_size += 1
-    visited[y][x] = True
-    dfs(grid, visited, y + 1, x, basin_size, basin_sizes)
-    dfs(grid, visited, y - 1, x, basin_size, basin_sizes)
-    dfs(grid, visited, y, x + 1, basin_size, basin_sizes)
-    dfs(grid, visited, y, x - 1, basin_size, basin_sizes)
-    basin_sizes.append(basin_size)
-
-
-def get_basin_sizes(grid, visited, basin_sizes, real_basin_sizes):
-    for y, row in enumerate(grid):
-        for x, height in enumerate(row):
-            basin_size = 0
-            basin_sizes = []
-            if grid[y][x] != 9 and visited[y][x] is False:
-                dfs(grid, visited, y, x, basin_size, basin_sizes)
-                real_basin_sizes.append(len(basin_sizes))
+        return cur_num
 
 
 def main():
     parser = ArgumentParser()
     parser.add_argument("-t", "--testing", action="store_true")
-    parser.add_argument("-b", "--basins", action="store_true")
+    parser.add_argument("-p", "--part-one", action="store_true")
     args = parser.parse_args()
-    testing = args.testing
-    basins = args.basins
-    grid = get_grid(testing)
-    if basins:
-        visited = [[False for height in row] for row in grid]
-        basin_sizes = []
-        real_basin_sizes = []
-        get_basin_sizes(grid, visited, basin_sizes, real_basin_sizes)
-        real_basin_sizes.sort()
-        print(real_basin_sizes[-1] * real_basin_sizes[-2] * real_basin_sizes[-3])
-    else:
-        low_points = []
-        for i, row in enumerate(grid):
-            for j, cell in enumerate(row):
-                if is_low_point(cell, grid, i, j):
-                    low_points.append(cell)
+    testing: bool = args.testing
+    part_one: bool = args.part_one
 
-        print(sum(low_points) + len(low_points))
+    lines = list_input_lines(Path(__file__), testing, True)
+    value_histories = [
+        ValuesHistory(list(map(lambda val: int(val), line.split(" "))))
+        for line in lines
+    ]
+
+    if part_one:
+        print(sum([hist.extrapolated_value for hist in value_histories]))
+    else:
+        print(sum([hist.reverse_extrapolated_value for hist in value_histories]))
 
 
 main()

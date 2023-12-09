@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
-from pathlib import Path
-from typing import List, Dict, Tuple, Set
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict, List, Set, Tuple
 
 from utils.files import list_input_lines
 
@@ -22,12 +22,8 @@ class SourceDestValues:
 
 
 def parse_source_dest_values(line):
-    parts = line.split(' ')
-    return SourceDestValues(
-        int(parts[0]),
-        int(parts[1]),
-        int(parts[2])
-    )
+    parts = line.split(" ")
+    return SourceDestValues(int(parts[0]), int(parts[1]), int(parts[2]))
 
 
 def main():
@@ -55,10 +51,12 @@ def main():
         water_to_light_map,
         light_to_temperature_map,
         temperature_to_humidity_map,
-        humidity_to_location_map
+        humidity_to_location_map,
     ]
 
-    seeds: List[int] = list(map(lambda x: int(x), lines[0].split(':')[1].strip().split(' ')))
+    seeds: List[int] = list(
+        map(lambda x: int(x), lines[0].split(":")[1].strip().split(" "))
+    )
     if not part_one:
         seeds = parse_seed_ranges(seeds)
     parse_almanac_mappings(lines, ordered_dicts)
@@ -82,7 +80,7 @@ def get_location_values_for_seeds(ordered_dicts, seeds):
 def parse_almanac_mappings(lines, ordered_dicts):
     cur_dict_idx = 0
     for line in lines[3:]:
-        if line == '':
+        if line == "":
             cur_dict_idx += 1
         elif line[0].isdigit():
             source_dest_values: SourceDestValues = parse_source_dest_values(line)

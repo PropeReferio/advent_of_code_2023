@@ -1,8 +1,8 @@
 import math
 from argparse import ArgumentParser
-from pathlib import Path
-from typing import List, Dict, Tuple, Set
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict, List, Set, Tuple
 
 from utils.files import list_input_lines
 
@@ -59,17 +59,17 @@ def count_failures_from_extreme_ends(record, time):
 
 def parse_single_race_and_time(lines):
     time = lines[0].split(":")[1].strip().split(" ")
-    time = int(''.join(time))
+    time = int("".join(time))
     record = lines[1].split(":")[1].strip().split(" ")
-    record = int(''.join(record))
+    record = int("".join(record))
     return record, time
 
 
 def parse_multiple_races_and_times(lines):
     times = lines[0].split(":")[1].strip().split(" ")
-    times = [int(x) for x in times if x != '']
+    times = [int(x) for x in times if x != ""]
     records = lines[1].split(":")[1].strip().split(" ")
-    records = [int(x) for x in records if x != '']
+    records = [int(x) for x in records if x != ""]
     times_distance_maps = dict(zip(times, records))
     return times, times_distance_maps
 

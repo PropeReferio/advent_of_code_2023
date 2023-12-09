@@ -35,7 +35,6 @@ def score_remaining_chars(remaining_chars):
 
 
 def score_row_of_chars(row, complete=False):
-
     bracket_pairs = {"}": "{", "]": "[", ")": "(", ">": "<"}
 
     bracket_scores = {

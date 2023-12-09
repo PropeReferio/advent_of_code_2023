@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
-from pathlib import Path
-from typing import List, Dict, Tuple, Set
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict, List, Set, Tuple
 
 from utils.files import list_input_lines
 
@@ -55,14 +55,14 @@ def main():
 def parse_scratchcards(lines):
     scratchcards: List[ScratchCard] = []
     for line in lines:
-        _, remainder = line.split(':')
-        winning_side, own_side = remainder.split('|')
+        _, remainder = line.split(":")
+        winning_side, own_side = remainder.split("|")
         winning_nums: List[int] = []
         own_nums: List[int] = []
-        for string in winning_side.split(' '):
+        for string in winning_side.split(" "):
             if string.isdigit():
                 winning_nums.append(int(string))
-        for string in own_side.split(' '):
+        for string in own_side.split(" "):
             if string.isdigit():
                 own_nums.append(int(string))
 

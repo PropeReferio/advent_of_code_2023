@@ -2,7 +2,6 @@ from argparse import ArgumentParser
 from pathlib import Path
 from typing import List
 
-
 WORD_NUMBERS_MAP = {
     "one": "1",
     "two": "2",
@@ -25,7 +24,7 @@ def get_calibration_input(testing=False) -> List[str]:
     return lines
 
 
-def get_nums_from_input(all_nums: List[int], input: str, words: bool=False):
+def get_nums_from_input(all_nums: List[int], input: str, words: bool = False):
     first_digit, last_digit = None, None
     cur_string = ""
     for char in input:
@@ -40,7 +39,9 @@ def get_nums_from_input(all_nums: List[int], input: str, words: bool=False):
                     if first_digit is None:
                         first_digit = v
                     last_digit = v
-    all_nums.append(int(first_digit + last_digit if last_digit else first_digit + first_digit))
+    all_nums.append(
+        int(first_digit + last_digit if last_digit else first_digit + first_digit)
+    )
 
 
 def main():

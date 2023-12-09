@@ -11,7 +11,7 @@ def get_reactions_and_elements(testing=False):
         lines = read_file.read().split("\n")
 
     template = lines[0]
-    reactions = {line.split(' -> ')[0]: line.split(' -> ')[1] for line in lines[2:]}
+    reactions = {line.split(" -> ")[0]: line.split(" -> ")[1] for line in lines[2:]}
 
     return template, reactions
 
@@ -20,12 +20,11 @@ def insert_chemical_products(cur_elements, reactions):
     new_elements = list(cur_elements[0])
     # TODO improve time complexity
     for i in range(len(cur_elements) - 1):
-        first, second = cur_elements[i], cur_elements[i+1]
+        first, second = cur_elements[i], cur_elements[i + 1]
         cur_pair = f"{first}{second}"
         new_elements.append(f"{reactions.get(cur_pair)}{second}")
 
-
-    return ''.join(new_elements)
+    return "".join(new_elements)
 
 
 def get_most_and_least_common_elements(cur_elements):

@@ -1,9 +1,8 @@
 from argparse import ArgumentParser
 from collections import Counter
+from enum import StrEnum, auto
 from operator import attrgetter
 from pathlib import Path
-
-from enum import StrEnum, auto
 
 from utils.files import list_input_lines
 
@@ -19,8 +18,7 @@ class HandTypeEnum(StrEnum):
 
 
 class Hand:
-
-    def __init__(self, hand:str, bid: int, part_two: bool):
+    def __init__(self, hand: str, bid: int, part_two: bool):
         self.hand = hand
         self.bid = bid
         self.rank = None
@@ -29,7 +27,7 @@ class Hand:
 
     def get_hand_type(self, part_two=False):
         if part_two:
-            cards_remaining = self.hand.replace('J', '')
+            cards_remaining = self.hand.replace("J", "")
             counter = Counter(cards_remaining)
             jokers = 5 - len(cards_remaining)
             counts = list(counter.values())
@@ -58,7 +56,21 @@ class Hand:
 
     def get_card_rankings(self, part_two):
         rankings = []
-        card_values = {'A': 13, 'K': 12, 'Q': 11, 'J': 0 if part_two else 10, 'T': 9, '9': 8, '8': 7, '7': 6, '6': 5, '5': 4, '4': 3, '3': 2, '2': 1}
+        card_values = {
+            "A": 13,
+            "K": 12,
+            "Q": 11,
+            "J": 0 if part_two else 10,
+            "T": 9,
+            "9": 8,
+            "8": 7,
+            "7": 6,
+            "6": 5,
+            "5": 4,
+            "4": 3,
+            "3": 2,
+            "2": 1,
+        }
         for card in self.hand:
             rankings.append(card_values[card])
 
@@ -85,7 +97,7 @@ def main():
         HandTypeEnum.three_of_a_kind: [],
         HandTypeEnum.two_pair: [],
         HandTypeEnum.one_pair: [],
-        HandTypeEnum.high_card: []
+        HandTypeEnum.high_card: [],
     }
     # Step 1: Make a list of hand objects
     hands = map_hands_to_bids(lines, part_two=not part_one)
@@ -102,7 +114,7 @@ def main():
 
 def sort_hands_by_rank(hands_by_type):
     for hand_type, hands_list in hands_by_type.items():
-        hands_list.sort(key=attrgetter('card_rankings'), reverse=True)
+        hands_list.sort(key=attrgetter("card_rankings"), reverse=True)
     high_to_low = []
     for hand_type in [
         HandTypeEnum.five_of_a_kind,
@@ -111,7 +123,7 @@ def sort_hands_by_rank(hands_by_type):
         HandTypeEnum.three_of_a_kind,
         HandTypeEnum.two_pair,
         HandTypeEnum.one_pair,
-        HandTypeEnum.high_card
+        HandTypeEnum.high_card,
     ]:
         high_to_low.extend(hands_by_type[hand_type])
     low_to_high = reversed(high_to_low)
@@ -130,7 +142,7 @@ def print_sum_winnings(low_to_high):
 def map_hands_to_bids(lines, part_two: bool):
     hands = []
     for line in lines:
-        split_line = line.split(' ')
+        split_line = line.split(" ")
         hand = Hand(split_line[0], int(split_line[1]), part_two)
         hands.append(hand)
     return hands

@@ -1,7 +1,7 @@
 import math
 from argparse import ArgumentParser
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict, List
 
 from utils.files import list_input_lines
 
@@ -12,7 +12,7 @@ COLORS = {"red", "green", "blue"}
 def turn_round_into_dict(round: List[str]) -> Dict[str, int]:
     color_dict = dict()
     for color in round:
-        num = int(''.join([char for char in color if char.isdigit()]))
+        num = int("".join([char for char in color if char.isdigit()]))
         for _color_item in COLORS:
             if _color_item in color:
                 color_dict[_color_item] = num
@@ -23,15 +23,13 @@ def turn_round_into_dict(round: List[str]) -> Dict[str, int]:
 def parse_cube_game_lines(input_lines: List[str]) -> Dict:
     games_map: dict = {}
     for line in input_lines:
-        id_str, data_string = line.split(':')
-        game_id = int(''.join([char for char in id_str if char.isdigit()]))
+        id_str, data_string = line.split(":")
+        game_id = int("".join([char for char in id_str if char.isdigit()]))
         games_map[game_id] = []
-        rounds = [round.split(',') for round in data_string.split(';')]
+        rounds = [round.split(",") for round in data_string.split(";")]
         for round in rounds:
             round_dict = turn_round_into_dict(round)
-            games_map[game_id].append(
-                round_dict
-            )
+            games_map[game_id].append(round_dict)
 
     return games_map
 
@@ -46,13 +44,14 @@ def is_game_possible(game_data: List[Dict]) -> bool:
 
 
 def get_least_possible_cubes_per_game(game_data: List[Dict]) -> List[int]:
-    least_possible_cubes = {'red': 0, 'blue': 0, 'green': 0}
+    least_possible_cubes = {"red": 0, "blue": 0, "green": 0}
     for _round in game_data:
         for color in COLORS:
-            least_possible_cubes[color] = max(least_possible_cubes[color], _round.get(color, 0))
+            least_possible_cubes[color] = max(
+                least_possible_cubes[color], _round.get(color, 0)
+            )
 
     return list(least_possible_cubes.values())
-
 
 
 def main():
@@ -77,7 +76,9 @@ def main():
     else:
         powers_sum = 0
         for game_data in games_dict.values():
-            least_possible_cubes_per_game: List[int] = get_least_possible_cubes_per_game(game_data)
+            least_possible_cubes_per_game: List[
+                int
+            ] = get_least_possible_cubes_per_game(game_data)
             powers_sum += math.prod(least_possible_cubes_per_game)
 
         print(powers_sum)
