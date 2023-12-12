@@ -1,95 +1,102 @@
 from argparse import ArgumentParser
+from dataclasses import dataclass
+from pathlib import Path
 from pprint import pprint
+from typing import List
+
+from utils.files import list_input_lines
 
 
-def get_octopi(testing=False):
-    file_name = __file__.split("/")[-1].replace("py", "txt")
-    file_path = f"./example_inputs/{file_name}" if testing else f"./inputs/{file_name}"
-    with open(file_path, "r") as read_file:
-        rows = read_file.read().split("\n")
-        grid = [[int(num) for num in row] for row in rows]
+@dataclass
+class Galaxy:
+    y: int
+    x: int
 
-    return grid
-
-
-def increment_all_energy_by_one(grid):
-    grid = [[num + 1 for num in row] for row in grid]
-    return grid
+    def get_distance_to_other_galaxy(self, other):
+        return abs(self.x - other.x) + abs(self.y - other.y)
 
 
-def flash_single_octopus_and_increment_adjacent(grid, x, y, total_flashes):
-    if grid[y][x] == 0:
-        # If an octopus is at 0, it has already flashed. Therefore don't
-        # increment anything.
-        return
-    total_flashes += 1
-    grid[y][x] = 0
-    # Increment all adjacent octopi.
-    boundary = range(10)
-    for y_adj in range(-1, 2):
-        for x_adj in range(-1, 2):
-            if (
-                x_adj == 0
-                and y_adj == 0
-                or not y + y_adj in boundary
-                or not x + x_adj in boundary
-            ):
-                continue
+def expand_the_universe(
+    universe: List[List[str]], part_one: bool = True
+) -> List[List[str]]:
+    with_columns_added: List[List[str]] = []
+    columns_to_insert: List[int] = []
+    replacement_character = "." if part_one else "*"
+    for x in range(len(universe[0])):
+        column = [row[x] for row in universe]
+        if all([char == "." for char in column]):
+            columns_to_insert.append(x)
+    for row in universe:
+        new_row = row
+        expansions = 0
+        for idx in columns_to_insert:
+            new_row = (
+                new_row[: idx + expansions]
+                + replacement_character
+                + new_row[idx + expansions :]
+            )
+            expansions += 1
+        with_columns_added.append(new_row)
+    with_rows_added: List[List[str]] = []
+    for row in with_columns_added:
+        with_rows_added.append(row)
+        if all([char in {replacement_character, "."} for char in row]):
+            with_rows_added.append(
+                "".join([replacement_character for _ in range(len(row))])
+            )
+
+    return with_rows_added
+
+
+def find_galaxies(expanded: List[List[str]], testing: bool = False) -> List[Galaxy]:
+    part_two_distance = 99 if testing else 999_999
+    list_of_galaxies: List[Galaxy] = []
+    y = 0
+    for row in expanded:
+        x = 0
+        if all([char == "*" for char in row]):
+            y += part_two_distance
+            continue
+        else:
+            y += 1
+        for x_coord, char in enumerate(row):
+            column = [row[x_coord] for row in expanded]
+            if all([char == "*" for char in column]):
+                x += part_two_distance
             else:
-                if grid[y + y_adj][x + x_adj] != 0:
-                    grid[y + y_adj][x + x_adj] += 1
-    return grid, total_flashes
+                x += 1
+                if char == "#":
+                    list_of_galaxies.append(Galaxy(y, x))
+
+    return list_of_galaxies
 
 
-def flash_octopi(grid, total_flashes):
-    for y, row in enumerate(grid):
-        for x, octopus in enumerate(row):
-            if octopus > 9:
-                grid, total_flashes = flash_single_octopus_and_increment_adjacent(
-                    grid, x, y, total_flashes
-                )
+def list_distances(list_of_galaxies: List[Galaxy]):
+    distances: List[int] = []
+    for idx, galaxy in enumerate(list_of_galaxies):
+        for next_galaxy in list_of_galaxies[idx + 1 :]:
+            distances.append(galaxy.get_distance_to_other_galaxy(next_galaxy))
 
-    return grid, total_flashes
-
-
-def grid_still_needs_flashing(grid):
-    for y, row in enumerate(grid):
-        for x, octopus in enumerate(row):
-            if octopus > 9:
-                return True
-    return False
-
-
-def take_a_step(grid, total_flashes):
-    grid = increment_all_energy_by_one(grid)
-    while grid_still_needs_flashing(grid):
-        grid, total_flashes = flash_octopi(grid, total_flashes)
-    return grid, total_flashes
+    return distances
 
 
 def main():
     parser = ArgumentParser()
     parser.add_argument("-t", "--testing", action="store_true")
-    parser.add_argument("-s", "--simultaneous", action="store_true")
+    parser.add_argument("-p", "--part-one", action="store_true")
     args = parser.parse_args()
-    testing = args.testing
-    simultaneous = args.simultaneous
-    grid = get_octopi(testing)
-    total_flashes = 0
-    step = 0
-    if not simultaneous:
-        for _ in range(100):
-            grid, total_flashes = take_a_step(grid, total_flashes)
-    else:
-        while True:
-            grid, total_flashes = take_a_step(grid, total_flashes)
-            step += 1
-            if simultaneous:
-                if sum([sum([octopus for octopus in row]) for row in grid]) == 0:
-                    return step
+    testing: bool = args.testing
+    part_one: bool = args.part_one
 
-    # How many total flashes are there after 100 steps?
-    return total_flashes
+    universe = list_input_lines(Path(__file__), testing, True)
+
+    expanded = expand_the_universe(universe, part_one=part_one)
+    pprint(expanded)
+    list_of_galaxies: List[Galaxy] = find_galaxies(expanded, testing=testing)
+    list_of_distances: List[int] = list_distances(list_of_galaxies)
+    print(f"Length of distances list: {len(list_of_distances)}")
+
+    print(sum(list_of_distances))
 
 
-print(main())
+main()

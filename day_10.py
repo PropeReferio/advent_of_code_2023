@@ -13,6 +13,7 @@ class CardinalDirection(StrEnum):
     E = auto()
     S = auto()
 
+
 class PipeDirection(StrEnum):
     SEVEN = "7"
     L = "L"
@@ -45,45 +46,105 @@ class Pipe:
         if self.direction == PipeDirection.L:
             if self.origin == CardinalDirection.N:
                 # Go east, origin W
-                return Pipe(two_d_array[self.y][self.x + 1], self.y, self.x + 1, CardinalDirection.W)
+                return Pipe(
+                    two_d_array[self.y][self.x + 1],
+                    self.y,
+                    self.x + 1,
+                    CardinalDirection.W,
+                )
             else:
                 # Go north, origin S
-                return Pipe(two_d_array[self.y - 1][self.x], self.y - 1, self.x, CardinalDirection.S)
+                return Pipe(
+                    two_d_array[self.y - 1][self.x],
+                    self.y - 1,
+                    self.x,
+                    CardinalDirection.S,
+                )
         elif self.direction == PipeDirection.F:
             if self.origin == CardinalDirection.S:
                 # Go east, origin W
-                return Pipe(two_d_array[self.y][self.x + 1], self.y, self.x + 1, CardinalDirection.W)
+                return Pipe(
+                    two_d_array[self.y][self.x + 1],
+                    self.y,
+                    self.x + 1,
+                    CardinalDirection.W,
+                )
             else:
                 # Go south, origin N
-                return Pipe(two_d_array[self.y + 1][self.x], self.y + 1, self.x, CardinalDirection.N)
+                return Pipe(
+                    two_d_array[self.y + 1][self.x],
+                    self.y + 1,
+                    self.x,
+                    CardinalDirection.N,
+                )
         elif self.direction == PipeDirection.NORTH_SOUTH:
             if self.origin == CardinalDirection.N:
                 # Go south, origin N
-                return Pipe(two_d_array[self.y + 1][self.x], self.y + 1, self.x, CardinalDirection.N)
+                return Pipe(
+                    two_d_array[self.y + 1][self.x],
+                    self.y + 1,
+                    self.x,
+                    CardinalDirection.N,
+                )
             else:
                 # Go north, origin S
-                return Pipe(two_d_array[self.y - 1][self.x], self.y - 1, self.x, CardinalDirection.S)
+                return Pipe(
+                    two_d_array[self.y - 1][self.x],
+                    self.y - 1,
+                    self.x,
+                    CardinalDirection.S,
+                )
         elif self.direction == PipeDirection.SEVEN:
             if self.origin == CardinalDirection.S:
                 # Go west, origin E
-                return Pipe(two_d_array[self.y][self.x - 1], self.y, self.x - 1, CardinalDirection.E)
+                return Pipe(
+                    two_d_array[self.y][self.x - 1],
+                    self.y,
+                    self.x - 1,
+                    CardinalDirection.E,
+                )
             else:
                 # Go south, origin N
-                return Pipe(two_d_array[self.y + 1][self.x], self.y + 1, self.x, CardinalDirection.N)
+                return Pipe(
+                    two_d_array[self.y + 1][self.x],
+                    self.y + 1,
+                    self.x,
+                    CardinalDirection.N,
+                )
         elif self.direction == PipeDirection.EAST_WEST:
             if self.origin == CardinalDirection.W:
                 # Go east, origin W
-                return Pipe(two_d_array[self.y][self.x + 1], self.y, self.x + 1, CardinalDirection.W)
+                return Pipe(
+                    two_d_array[self.y][self.x + 1],
+                    self.y,
+                    self.x + 1,
+                    CardinalDirection.W,
+                )
             else:
                 # Go west, origin E
-                return Pipe(two_d_array[self.y][self.x - 1], self.y, self.x - 1, CardinalDirection.E)
+                return Pipe(
+                    two_d_array[self.y][self.x - 1],
+                    self.y,
+                    self.x - 1,
+                    CardinalDirection.E,
+                )
         elif self.direction == PipeDirection.J:
             if self.origin == CardinalDirection.N:
                 # Go west, origin E
-                return Pipe(two_d_array[self.y][self.x - 1], self.y, self.x - 1, CardinalDirection.E)
+                return Pipe(
+                    two_d_array[self.y][self.x - 1],
+                    self.y,
+                    self.x - 1,
+                    CardinalDirection.E,
+                )
             else:
                 # Go north, origin S
-                return Pipe(two_d_array[self.y - 1][self.x], self.y - 1, self.x, CardinalDirection.S)
+                return Pipe(
+                    two_d_array[self.y - 1][self.x],
+                    self.y - 1,
+                    self.x,
+                    CardinalDirection.S,
+                )
 
             # if self.y != 0:
             # node_above_value = two_d_array[self.y - 1][self.x]
@@ -98,10 +159,10 @@ class Pipe:
             #     }
             #     and node_above_coords not in seen
             # ):
-                # Rather than checking all 4 directions, it is possible to go only in the valid directions...
-                # For example, north and east for L. Pass in origin, only go the other way.
-                # seen.add(node_above_coords)
-                # return Pipe(node_above_value, self.y - 1, self.x)
+            # Rather than checking all 4 directions, it is possible to go only in the valid directions...
+            # For example, north and east for L. Pass in origin, only go the other way.
+            # seen.add(node_above_coords)
+            # return Pipe(node_above_value, self.y - 1, self.x)
         # if self.y != len(two_d_array) - 1:
         #     next_pipe_below = Pipe(two_d_array[self.y + 1][self.x], self.y + 1, self.x)
         #     if (
@@ -114,15 +175,15 @@ class Pipe:
         #         }
         #         and next_pipe_below.coords not in seen
         #     ):
-                # TODO the above doesn't work. It does not constrain based on
-                #  the direction of the current pipe.
-                #  Try a property like valid_adjacent_pipes:
-                #  if self.direction == PipeDirection.J:
-                #      return {PipeDirection.S, PipeDirection.L, PipeDirection.F, PipeDirection.EAST_WEST}
-                #  Consider composition: Turn the enum into a whole class, with the property above
-                #  As a part of it.
-                # seen.add((next_pipe_below.coords))
-                # return next_pipe_below
+        # TODO the above doesn't work. It does not constrain based on
+        #  the direction of the current pipe.
+        #  Try a property like valid_adjacent_pipes:
+        #  if self.direction == PipeDirection.J:
+        #      return {PipeDirection.S, PipeDirection.L, PipeDirection.F, PipeDirection.EAST_WEST}
+        #  Consider composition: Turn the enum into a whole class, with the property above
+        #  As a part of it.
+        # seen.add((next_pipe_below.coords))
+        # return next_pipe_below
         # if self.x != 0:
         #     next_pipe_right = Pipe(two_d_array[self.y][self.x - 1], self.y, self.x - 1)
         #     if (
@@ -158,14 +219,23 @@ class Pipe:
         southern_pipe = two_d_array[self.y + 1][self.x]
         eastern_pipe = two_d_array[self.y][self.x + 1]
         western_pipe = two_d_array[self.y][self.x - 1]
-        if northern_pipe in {PipeDirection.F, PipeDirection.SEVEN,
-                  PipeDirection.NORTH_SOUTH}:
+        if northern_pipe in {
+            PipeDirection.F,
+            PipeDirection.SEVEN,
+            PipeDirection.NORTH_SOUTH,
+        }:
             return Pipe(northern_pipe, self.y - 1, self.x, CardinalDirection.S)
-        elif southern_pipe in {PipeDirection.NORTH_SOUTH, PipeDirection.J,
-                            PipeDirection.L}:
+        elif southern_pipe in {
+            PipeDirection.NORTH_SOUTH,
+            PipeDirection.J,
+            PipeDirection.L,
+        }:
             return Pipe(southern_pipe, self.y + 1, self.x, CardinalDirection.N)
-        elif eastern_pipe in {PipeDirection.EAST_WEST, PipeDirection.J,
-                    PipeDirection.SEVEN}:
+        elif eastern_pipe in {
+            PipeDirection.EAST_WEST,
+            PipeDirection.J,
+            PipeDirection.SEVEN,
+        }:
             return Pipe(southern_pipe, self.y, self.x + 1, CardinalDirection.W)
         else:
             return Pipe(western_pipe, self.y, self.x - 1, CardinalDirection.E)
@@ -203,7 +273,6 @@ def main():
     # while steps != halfway_distance:
     #     cur_node: Pipe = cur_node.get_next_pipe(two_d_array)
     #     steps += 1
-
 
     # if part_one:
     #     print(sum([hist.extrapolated_value for hist in value_histories]))
